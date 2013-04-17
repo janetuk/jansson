@@ -1,5 +1,5 @@
 Name:		jansson
-Version:	2.0
+Version:	2.4
 Release:	1%{?dist}
 Summary:	Javascript Object Notation parsing library
 
