@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2009-2011 Petri Lehtinen <petri@digip.org>
- * Copyright (c) 2010-2011 Graeme Smecher <graeme.smecher@mail.mcgill.ca>
+ * Copyright (c) 2009-2012 Petri Lehtinen <petri@digip.org>
+ * Copyright (c) 2010-2012 Graeme Smecher <graeme.smecher@mail.mcgill.ca>
  *
  * Jansson is free software; you can redistribute it and/or modify
  * it under the terms of the MIT license. See LICENSE for details.
@@ -11,7 +11,7 @@
 #include <stdio.h>
 #include "util.h"
 
-int main()
+static void run_tests()
 {
     json_t *j, *j2;
     int i1, i2, i3;
@@ -120,6 +120,13 @@ int main()
     rv = json_unpack(j, "[i,i,i]", &i1, &i2, &i3);
     if(rv || i1 != 1 || i2 != 2 || i3 != 3)
         fail("json_unpack simple array failed");
+    json_decref(j);
+
+    /* object with many items & strict checking */
+    j = json_pack("{s:i, s:i, s:i}", "a", 1, "b", 2, "c", 3);
+    rv = json_unpack(j, "{s:i, s:i, s:i}", "a", &i1, "b", &i2, "c", &i3);
+    if(rv || i1 != 1 || i2 != 2 || i3 != 3)
+        fail("json_unpack object with many items failed");
     json_decref(j);
 
     /*
@@ -285,7 +292,7 @@ int main()
     /* Unpack the same item twice */
     j = json_pack("{s:s, s:i}", "foo", "bar", "baz", 42);
     if(!json_unpack_ex(j, &error, 0, "{s:s,s:s!}", "foo", &s, "foo", &s))
-       fail("json_unpack object with strict validation failed");
+        fail("json_unpack object with strict validation failed");
     check_error("1 object item(s) left unpacked", "<validation>", 1, 10, 10);
     json_decref(j);
 
@@ -330,5 +337,37 @@ int main()
     check_error("1 array item(s) left unpacked", "<validation>", 1, 5, 5);
     json_decref(j);
 
-    return 0;
+    /* Optional values */
+    j = json_object();
+    i1 = 0;
+    if(json_unpack(j, "{s?i}", "foo", &i1))
+        fail("json_unpack failed for optional key");
+    if(i1 != 0)
+        fail("json_unpack unpacked an optional key");
+    json_decref(j);
+
+    i1 = 0;
+    j = json_pack("{si}", "foo", 42);
+    if(json_unpack(j, "{s?i}", "foo", &i1))
+        fail("json_unpack failed for an optional value");
+    if(i1 != 42)
+        fail("json_unpack failed to unpack an optional value");
+    json_decref(j);
+
+    j = json_object();
+    i1 = i2 = i3 = 0;
+    if(json_unpack(j, "{s?[ii]s?{s{si}}}",
+                   "foo", &i1, &i2,
+                   "bar", "baz", "quux", &i3))
+        fail("json_unpack failed for complex optional values");
+    if(i1 != 0 || i2 != 0 || i3 != 0)
+        fail("json_unpack unexpectedly unpacked something");
+    json_decref(j);
+
+    j = json_pack("{s{si}}", "foo", "bar", 42);
+    if(json_unpack(j, "{s?{s?i}}", "foo", "bar", &i1))
+        fail("json_unpack failed for complex optional values");
+    if(i1 != 42)
+        fail("json_unpack failed to unpack");
+    json_decref(j);
 }

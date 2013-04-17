@@ -5,8 +5,7 @@ RFC Conformance
 ***************
 
 JSON is specified in :rfc:`4627`, *"The application/json Media Type
-for JavaScript Object Notation (JSON)"*. This chapter discusses
-Jansson's conformance to this specification.
+for JavaScript Object Notation (JSON)"*.
 
 Character Encoding
 ==================
@@ -29,6 +28,12 @@ error::
     ["this string contains the null character: \u0000"]
 
 All other Unicode codepoints U+0001 through U+10FFFF are allowed.
+
+Unicode normalization or any other transformation is never performed
+on any strings (string values or object keys). When checking for
+equivalence of strings or object keys, the comparison is performed
+byte by byte between the original UTF-8 representations of the
+strings.
 
 Numbers
 =======

@@ -1,4 +1,5 @@
-EXTRA_DIST = CHANGES LICENSE README.rst jansson.spec
+EXTRA_DIST = CHANGES LICENSE README.rst win32 jansson.spec
+
 SUBDIRS = doc src test
 
 # "make distcheck" builds the dvi target, so use it to check that the

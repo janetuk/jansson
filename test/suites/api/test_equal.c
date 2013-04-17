@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2011 Petri Lehtinen <petri@digip.org>
+ * Copyright (c) 2009-2012 Petri Lehtinen <petri@digip.org>
  *
  * Jansson is free software; you can redistribute it and/or modify
  * it under the terms of the MIT license. See LICENSE for details.
@@ -180,11 +180,10 @@ static void test_equal_complex()
     /* TODO: There's no negative test case here */
 }
 
-int main()
+static void run_tests()
 {
     test_equal_simple();
     test_equal_array();
     test_equal_object();
     test_equal_complex();
-    return 0;
 }

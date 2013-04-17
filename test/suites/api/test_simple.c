@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2011 Petri Lehtinen <petri@digip.org>
+ * Copyright (c) 2009-2012 Petri Lehtinen <petri@digip.org>
  *
  * Jansson is free software; you can redistribute it and/or modify
  * it under the terms of the MIT license. See LICENSE for details.
@@ -10,9 +10,25 @@
 #include "util.h"
 
 /* Call the simple functions not covered by other tests of the public API */
-int main()
+static void run_tests()
 {
     json_t *value;
+
+    value = json_boolean(1);
+    if(!json_is_true(value))
+        fail("json_boolean(1) failed");
+    json_decref(value);
+
+    value = json_boolean(-123);
+    if(!json_is_true(value))
+        fail("json_boolean(-123) failed");
+    json_decref(value);
+
+    value = json_boolean(0);
+    if(!json_is_false(value))
+        fail("json_boolean(0) failed");
+    json_decref(value);
+
 
     value = json_integer(1);
     if(json_typeof(value) != JSON_INTEGER)
@@ -180,6 +196,4 @@ int main()
     json_incref(value);
     if(value->refcount != (size_t)-1)
       fail("refcounting null works incorrectly");
-
-    return 0;
 }
